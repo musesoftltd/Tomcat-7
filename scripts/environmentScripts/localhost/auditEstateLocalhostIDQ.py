@@ -7,7 +7,7 @@ Created on 11 Oct 2016
 from environmentProperties.localhost.inventory import servers as localServers
 from environmentProperties.localhost.properties import dictionary as localServerDictionary
 from library.auditing.auditingLibrary import auditInitAudit
-from library.tomcat.auditServers_CCI import auditServersCCI
+from library.informatica.auditServers_IDQ import auditServersIDQ
 
 
 auditInitAudit("localMachine", "pegaCCI")
@@ -15,6 +15,6 @@ auditInitAudit("localMachine", "pegaCCI")
 # whether to allow the auditing framework to make changes to correct its findings...
 applyChanges = False
 
-auditServersCCI("Local Reference - Pega CCI", localServers, localServerDictionary, applyChanges)
+auditServersIDQ("Local Reference - Pega CCI", localServers, localServerDictionary, applyChanges)
 
 exit()

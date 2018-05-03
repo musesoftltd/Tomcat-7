@@ -4,7 +4,7 @@ Created on 20 Oct 2016
 @author: ...
 '''
 
-from environmentProperties.allEnvs.propertiesPega import dictionary as globalDictionary
+from environmentProperties.allEnvs.propertiesMdm import dictionary as globalDictionary
 from library.auditing.auditingLibrary import auditObjectAtom, \
     auditObjectMolecule, auditReport, auditObjectAtoms
 from library.util import scatterThread, gatherThreads
