@@ -1,4 +1,4 @@
-from tomcat.tomcatLib import getConnection, getDomainList, \
+from library.tomcat.tomcatLib import getConnection, getDomainList, \
     getObjectNames
 
 

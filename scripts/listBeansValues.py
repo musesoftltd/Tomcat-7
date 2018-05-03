@@ -3,10 +3,11 @@ import array
 from jarray import array_class
 from java.lang import Integer, String
 from java.lang.reflect import Array
- 
-from tomcat.tomcatLib import getConnection, getDomainList, \
+
+from library.tomcat.tomcatLib import getConnection, getDomainList, \
     getObjectNames, getAttribute
- 
+
+
 remoteServerConnection = getConnection("localhost", "8004")
  
 domainList = getDomainList(remoteServerConnection)
