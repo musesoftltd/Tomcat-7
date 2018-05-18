@@ -121,7 +121,7 @@ class auditObjectAtom():
  
     reportedAlready = False
  
-    def __init__(self, servername, username, password, auditTitle, cliVector, cliProperty, targetValue, bApplyTargetValue):
+    def __init__(self, servername, port, username, password, auditTitle, cliVector, cliProperty, targetValue, bApplyTargetValue):
         self.servername = servername
         self.username = username
         self.password = password
@@ -132,7 +132,7 @@ class auditObjectAtom():
  
         self.auditPassed = False
  
-        self.returnResult = self.audit(servername, username, password)
+        self.returnResult = self.audit(servername, port, username, password)
         if ((self.auditPassed == False) & (bApplyTargetValue)):
             self.applyTargetValue()
             self.audit(servername, username, password)
@@ -172,9 +172,9 @@ class auditObjectAtom():
  
         return self.auditResult
  
-    def audit(self, servername, username, password):
+    def audit(self, servername, port, username, password):
         print 'On Server: ' + servername + ' Auditing : ' + self.auditTitle + '...'
-        self.currentValue = getParameterValue(servername, username, password, self.cliVector, self.cliProperty)
+        self.currentValue = getParameterValue(servername, port, username, password, self.cliVector, self.cliProperty)
         self.auditResult = self.currentValue
         print 'Target Value: ' + self.targetValue
         print 'Actual Value: ' + self.currentValue

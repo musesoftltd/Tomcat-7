@@ -1,7 +1,7 @@
 '''
 @author: ...
 '''
-from environmentProperties.allEnvs import propertiesPega as globalProperties
+from environmentProperties.allEnvs import propertiesIdq as globalProperties
 from library.auditing.auditServerBase import auditServersBaseAudit
 from library.auditing.auditingLibrary import auditReport
 from library.util import gatherThreads, scatterThread

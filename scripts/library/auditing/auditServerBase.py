@@ -1,7 +1,7 @@
 '''
 @author: ...
 '''
-from environmentProperties.allEnvs.propertiesPega import dictionary as globalDictionary
+from environmentProperties.allEnvs.propertiesIdq import dictionary as globalDictionary
 from library.auditing.auditingLibrary import auditObjectAtom, auditObjectAtoms, \
     auditObjectMolecule
 
