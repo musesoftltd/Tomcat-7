@@ -1,6 +1,5 @@
-from tomcat.tomcatLib import getConnection, getDomainList, printDomainList, \
-    printMBeanList, getAttribute
-
+from library.tomcat.tomcatLib import getConnection, printDomainList, \
+    getDomainList, printMBeanList, getAttribute
 
 remoteServerConnection = getConnection("localhost", "8004")
 printDomainList(remoteServerConnection)
