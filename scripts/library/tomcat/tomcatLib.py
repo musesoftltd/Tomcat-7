@@ -9,7 +9,8 @@ import traceback
 
 from library.util import extractDatasourceName, extractXADatasourceName, \
     sanitizeJDBCCliVector, stripQuotes, regularExpressionSearch
-    
+
+
 def getConnection(host, port):
     serviceURL = "service:jmx:rmi:///jndi/rmi://"
     serviceURL = serviceURL + host + ":" + str(port) + "/jmxrmi"
@@ -211,7 +212,7 @@ def setParameterValue(servername, cliVector, cliProperty, targetValue, username=
     print 'On Server :' + servername + ' applying ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...end.'
     return appliedOk 
 
-def getParameterValue(servername, username, password, cliVector, cliProperty, reloadServerIfRequired=False):
+def getParameterValue(servername, port, username, password, cliVector, cliProperty, reloadServerIfRequired=False):
     retries = 1
     attempts = 0
     
@@ -229,48 +230,20 @@ def getParameterValue(servername, username, password, cliVector, cliProperty, re
             attempts += 1
             print ''
             print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...'
-            cliConnected = getConnection(servername)
+            cliConnected = getConnection(servername, port)
             if (cliConnected != None):
-                    dealingWithADatasource = False
-                    dealingWithAnXaDatasource = False
-                    # check for regular datasource...
-                    datasourceName = regularExpressionSearch("/subsystem=datasources/data-source=(.*)/", cliVector)
-                    xaDatasourceName = regularExpressionSearch("/subsystem=datasources/xa-data-source=(.*)/", cliVector)
-                                
-                    if (datasourceName != '') :
-                        # then we are dealing with a datsource.
-                        # better stop then start it.
-                        dealingWithADatasource = True
-    
-                        # if the datasource contains '/' we MUST escape it to work... 
-                        cliVector = sanitizeJDBCCliVector(cliVector)
-                    elif (xaDatasourceName != '') :
-                        dealingWithAnXaDatasource = True
-    
-                        # if the datasource contains '/' we MUST escape it to work... 
-                        cliVector = sanitizeJDBCCliVector(cliVector)
-                                    
-                    cliCmd = str(cliVector) + ':read-attribute(name=' + str(cliProperty) + ')'
+                    currentValue = str(getAttribute(cliConnected, cliVector, cliProperty))
                     
-                    print 'Issuing Server Command ->' + cliCmd + '<-'
-                    
-                    cliResult = cliConnected.cmd(cliCmd)
-                    
-                    if cliResult.success:
-                        appliedOk = True
-                        response = cliResult.getResponse()
-                        currentValue = response.get("result").asString()
-                        print 'On Server :' + servername + ' retrieved :' + currentValue
+                    if currentValue:
+                        print 'On Server :' + servername + ' retrieved :' + currentValue + '\n'
                     else:
                         appliedOk = False
-                        print 'Command Issue Failure ->' + cliCmd + '<-'
+                        print 'Command Issue Failure ->' + "getAttribute()" + '<-'
                         print 'On Server :' + servername + ' retrieving :' + cliProperty + ' from CLI Vector :' + cliVector + ' ...FAILED.'                        
-                        print cliResult.getResponse().get("failure-description").asString()
-                        print cliResult.getResponse().get("response-headers").asString()
                         currentValue = "Unknown"
                                                                
         except :
-            print 'Exception Issuing Server Command ->' + cliCmd + '<- caused an exception. FAILED.'
+            print 'Exception Issuing Server Command ->' + "getAttribute()" + '<- caused an exception. FAILED.'
 
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print "*** print_tb:"
@@ -283,7 +256,8 @@ def getParameterValue(servername, username, password, cliVector, cliProperty, re
             print formatted_lines[-1] 
             
         finally:
-            if (cliConnected != None) : cliConnected.disconnect()
+            None
+#            if (cliConnected != None) : cliConnected.disconnect()
       
         print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...end.'
         

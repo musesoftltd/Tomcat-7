@@ -18,7 +18,9 @@ def auditServersIDQThread(environment, servername, propertiesDictionary, bApplyR
 #     if connectSilent(servername, runtimeProperties["username"], runtimeProperties["password"]) == None:
 #         return
             
-    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "ajp-bio - ThreadPool", "Catalina:type=ThreadPool,name=\"ajp-bio-8009\"", "maxThreads", runtimeProperties["maxThreads"], False))    
+    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "ajp-bio - ThreadPool", "Catalina:type=ThreadPool,name=\"ajp-bio-8009\"", "maxThreads", runtimeProperties["maxThreads"], bApplyRequiredChanges))
+    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "localhost - maxActiveSessions", "Catalina:type=Manager,context=/,host=localhost", "maxActiveSessions", runtimeProperties["maxActiveSessions"], bApplyRequiredChanges))
+    
                 
     
 def auditServersIDQ(environment, servers, propertiesDictionary, bApplyRequiredChanges) :

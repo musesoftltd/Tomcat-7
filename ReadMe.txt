@@ -2,6 +2,10 @@
 # For Tomcat Scripting
 ########################################################
 
+*** NOTE: The Tomcat library relies on Java Extensions, Javax.
+*** NOTE: You must ensure a valid JRE or JDK System Runtime is registered to the project
+*** NOTE:  See JREorJDKSystemLibrary.png
+
 The JMX functionality in Tomcat can be made available by enabling a JMX port.
 If you are using Eclipse to manage your Tomcat instance,
 	You will need to edit the launch configuration properties for the Tomcat instance.

@@ -5,6 +5,9 @@ Created on 4 Apr 2017
 '''
 
 dictionary = {
+    "port" : "8004",
+    "maxThreads" : "200",
+    "maxActiveSessions" : "-1",
     "transactionsDefaultTimeout" : "3600",
     "hornetq-security-enabled" : "false",
     "hornetq-persistence-enabled" : "true",

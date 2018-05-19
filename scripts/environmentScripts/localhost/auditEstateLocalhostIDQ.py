@@ -10,11 +10,11 @@ from library.auditing.auditingLibrary import auditInitAudit
 from library.informatica.auditServers_IDQ import auditServersIDQ
 
 
-auditInitAudit("localMachine", "pegaCCI")
+auditInitAudit("localMachine", "Informatica IDQ")
 
 # whether to allow the auditing framework to make changes to correct its findings...
 applyChanges = False
 
-auditServersIDQ("Local Reference - Pega CCI", localServers, localServerDictionary, applyChanges)
+auditServersIDQ("Local Reference - Informatica IDQ", localServers, localServerDictionary, applyChanges)
 
 exit()
