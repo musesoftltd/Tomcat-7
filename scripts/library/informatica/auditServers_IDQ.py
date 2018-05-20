@@ -1,12 +1,12 @@
-'''
-Created on 20 Oct 2016
 
-@author: ...
-'''
+# Created on 20 Oct 2016
+
+# @author: ...
 
 from environmentProperties.allEnvs.propertiesIdq import dictionary as globalDictionary
-from library.auditing.auditingLibrary import auditObjectAtom, \
-    auditObjectMolecule, auditReport, auditObjectAtoms
+from library.auditing import auditServerBase
+from library.auditing.auditServerBase import auditServersBaseAudit
+from library.auditing.auditingLibrary import auditObjectAtom, auditReport, auditObjectAtoms
 from library.util import scatterThread, gatherThreads
 
 
@@ -17,12 +17,9 @@ def auditServersIDQThread(environment, servername, propertiesDictionary, bApplyR
 
 #     if connectSilent(servername, runtimeProperties["username"], runtimeProperties["password"]) == None:
 #         return
-            
-    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "ajp-bio - ThreadPool", "Catalina:type=ThreadPool,name=\"ajp-bio-8009\"", "maxThreads", runtimeProperties["maxThreads"], bApplyRequiredChanges))
-    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "localhost - maxActiveSessions", "Catalina:type=Manager,context=/,host=localhost", "maxActiveSessions", runtimeProperties["maxActiveSessions"], bApplyRequiredChanges))
-    
-                
-    
+#    auditObjectAtoms.append(auditObjectAtom(servername, runtimeProperties["port"], runtimeProperties["username"], runtimeProperties["password"], "localhost - name", "Catalina:type=Service", "name", runtimeProperties["Catalina:type=Service"], bApplyRequiredChanges))
+    auditServersBaseAudit(environment, servername, runtimeProperties, bApplyRequiredChanges)
+        
 def auditServersIDQ(environment, servers, propertiesDictionary, bApplyRequiredChanges) :
     # merge global properties into dict - deliberately overwriting local with global dict all values
 

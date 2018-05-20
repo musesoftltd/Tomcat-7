@@ -212,7 +212,7 @@ def setParameterValue(servername, cliVector, cliProperty, targetValue, username=
     print 'On Server :' + servername + ' applying ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...end.'
     return appliedOk 
 
-def getParameterValue(servername, port, username, password, cliVector, cliProperty, reloadServerIfRequired=False):
+def getParameterValue(servername, port, username, password, cliVector, cliProperty, reloadServerIfRequired=False, silent = False):
     retries = 1
     attempts = 0
     
@@ -228,38 +228,39 @@ def getParameterValue(servername, port, username, password, cliVector, cliProper
     while (attempts <= retries) :
         try:
             attempts += 1
-            print ''
-            print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...'
+            if not(silent): print ''
+            if not(silent): print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...'
             cliConnected = getConnection(servername, port)
             if (cliConnected != None):
                     currentValue = str(getAttribute(cliConnected, cliVector, cliProperty))
                     
                     if currentValue:
-                        print 'On Server :' + servername + ' retrieved :' + currentValue + '\n'
+                        if not(silent): print 'On Server :' + servername + ' retrieved :' + currentValue + '\n'
                     else:
                         appliedOk = False
-                        print 'Command Issue Failure ->' + "getAttribute()" + '<-'
-                        print 'On Server :' + servername + ' retrieving :' + cliProperty + ' from CLI Vector :' + cliVector + ' ...FAILED.'                        
+                        if not(silent): print 'Command Issue Failure ->' + "getAttribute()" + '<-'
+                        if not(silent): print 'On Server :' + servername + ' retrieving :' + cliProperty + ' from CLI Vector :' + cliVector + ' ...FAILED.'                        
                         currentValue = "Unknown"
                                                                
         except :
-            print 'Exception Issuing Server Command ->' + "getAttribute()" + '<- caused an exception. FAILED.'
-
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            print "*** print_tb:"
-            traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
-            print "*** print_exception:"
-            traceback.print_exception(exc_type, exc_value, exc_traceback, limit=2, file=sys.stdout)
-            print "*** format_exc, first and last line:"
-            formatted_lines = traceback.format_exc().splitlines()
-            print formatted_lines[0]
-            print formatted_lines[-1] 
+            if not(silent):
+                print 'Exception Issuing Server Command ->' + "getAttribute()" + '<- caused an exception. FAILED.'
+    
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print "*** print_tb:"
+                traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+                print "*** print_exception:"
+                traceback.print_exception(exc_type, exc_value, exc_traceback, limit=2, file=sys.stdout)
+                print "*** format_exc, first and last line:"
+                formatted_lines = traceback.format_exc().splitlines()
+                print formatted_lines[0]
+                print formatted_lines[-1] 
             
         finally:
             None
 #            if (cliConnected != None) : cliConnected.disconnect()
       
-        print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...end.'
+        if not(silent): print 'On Server :' + servername + ' retrieving ->' + cliProperty + '<- from CLI Vector ->' + cliVector + '<- ...end.'
         
         if ((cliConnected != None) and (currentValue != "Unknown") and (currentValue != "")):
             break

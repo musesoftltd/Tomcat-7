@@ -5,16 +5,14 @@ Created on 11 Oct 2016
 '''
  
 import datetime
+import os
 
 from library.tomcat.tomcatLib import setParameterValue, getParameterValue
 from library.util import mkdir_p, appendToFile, stripQuotes
 
 
-mkdir_p("./reports")
- 
 datetimeSuffix = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H.%M.%S')
-# auditFileName =  './reports/technical' + '-' + datetimeSuffix  + '.csv'
-# reportFileName = './reports/managerial' + '-' + datetimeSuffix + '.csv'
+
 global auditFileName
 global reportFileName
 auditFileName =  ''
@@ -30,10 +28,38 @@ global currentAuditReportServer
 global currentAuditReportEnvironment
 currentAuditReportServer = ""
 currentAuditReportEnvironment = ""
- 
+
+global globalReportsStarted
+globalReportsStarted = False
+
+global auditReportPath
+auditReportPath = ''
+     
 # list of audit objects.
 auditObjectAtoms = []
 auditObjectMolecules = []
+
+def getReportDirectory():
+    global globalReportsStarted
+    global auditReportPath
+    
+    if not(globalReportsStarted):
+        globalReportsStarted = True
+        
+        try :
+            auditReportPath = os.environ['WORKSPACE']
+            print "Jenkins Environment Workspace Path: " + auditReportPath
+        except:
+            None       
+  
+        if (auditReportPath == "") :
+            auditReportPath = "../reports/"
+ 
+        mkdir_p(auditReportPath)        
+ 
+    return auditReportPath
+ 
+print "Generating Reports in: " +  getReportDirectory()
  
 def appendToReport(strToAppend):
     global reportFileName
@@ -41,7 +67,7 @@ def appendToReport(strToAppend):
     global strTechnologyType
  
     if (reportFileName == '') :
-        reportFilename = './reports/managerial' + '-' + strTechnologyType + '-' + strEnvironment + '-' + datetimeSuffix  + '.csv'
+        reportFilename = '../reports/managerial' + '-' + strTechnologyType + '-' + strEnvironment + '-' + datetimeSuffix  + '.csv'
  
     appendToFile(strToAppend, reportFilename)
  
@@ -51,7 +77,7 @@ def appendToAudit(strToAppend):
     global strTechnologyType
  
     if (auditFileName == '') :
-        auditFileName = './reports/technical' + '-' + strTechnologyType + '-' + strEnvironment + '-' + datetimeSuffix  + '.csv'
+        auditFileName = '../reports/technical' + '-' + strTechnologyType + '-' + strEnvironment + '-' + datetimeSuffix  + '.csv'
  
     appendToFile(strToAppend, auditFileName)
  
@@ -109,10 +135,11 @@ class auditObjectAtom():
     username = ""
     password = ""
  
+    auditTitle = ""
+
     cliVector = ""
     cliProperty = ""
  
-    auditTitle = ""
     currentValue = ""
     targetValue = ""
  
@@ -156,7 +183,7 @@ class auditObjectAtom():
         else :
             currentValue = self.currentValue
  
-        appendToAudit(self.servername + ',' + passFailRecord + ',' + self.auditTitle + ',current:"' + currentValue + '",target:"' + targetValue + '"\n')
+        appendToAudit('Env:' + strEnvironment + ' : ' + self.servername + ',' + passFailRecord + ',' + self.auditTitle + ',current:"' + currentValue + '",target:"' + targetValue + '"\n')
  
     def applyTargetValue(self):       
         print 'On Server: ' + self.servername + ' Applying : ' + self.auditTitle + '...'      
@@ -174,7 +201,7 @@ class auditObjectAtom():
  
     def audit(self, servername, port, username, password):
         print 'On Server: ' + servername + ' Auditing : ' + self.auditTitle + '...'
-        self.currentValue = getParameterValue(servername, port, username, password, self.cliVector, self.cliProperty)
+        self.currentValue = getParameterValue(servername, port, username, password, self.cliVector, self.cliProperty, silent=True)
         self.auditResult = self.currentValue
         print 'Target Value: ' + self.targetValue
         print 'Actual Value: ' + self.currentValue
@@ -223,10 +250,9 @@ def auditInitAudit(environment, technologyType):
     strTechnologyType = technologyType
  
     appendToAudit('Server, Test Result, Test' + '\n')
+    
+    appendToReport('Muse, https://sourceforge.net/projects/museproject/, \n')
     appendToReport('Middleware Audit' + '\n')
- 
-#     pivotTableEntry = ['Server', 'Test', 'Test Result']
-#     pivotTable.append(pivotTableEntry)
  
 def auditWriteAudit(server, auditText, bAuditPassed):
     passFailRecord = ""

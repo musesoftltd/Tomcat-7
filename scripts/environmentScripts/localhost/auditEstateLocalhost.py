@@ -9,7 +9,7 @@ from environmentProperties.localhost.properties import dictionary as localServer
 from library.auditing.auditingLibrary import auditInitAudit
 from library.auditing.auditServers import auditServers
 
-auditInitAudit("localMachine", "TomcatBase")
+auditInitAudit("localMachine", "Tomcat Base")
 
 # whether to allow the auditing framework to make changes to correct its findings...
 applyChanges = False

@@ -9,7 +9,6 @@ from environmentProperties.localhost.properties import dictionary as localServer
 from library.auditing.auditingLibrary import auditInitAudit
 from library.informatica.auditServers_IDQ import auditServersIDQ
 
-
 auditInitAudit("localMachine", "Informatica IDQ")
 
 # whether to allow the auditing framework to make changes to correct its findings...
