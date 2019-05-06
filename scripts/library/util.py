@@ -224,7 +224,7 @@ def gatherThreads(strThreadPoolId):
     for t in localThreadsList:
         t.join()
 
-def execSshRemote(hostname, username, identityFileFullPath, identityPassword, commandsSemiColonSeperated):
+def execSshRemote(hostname, username, identityFileFullPath, identityPassword, commandsSemiColonSeperated, sessionTimeoutSecs = 0):
     _hostname = hostname
     _username = username
     _identityPassword = identityPassword
@@ -241,19 +241,23 @@ def execSshRemote(hostname, username, identityFileFullPath, identityPassword, co
     config.put("PreferredAuthentications", "publickey");
     session.setConfig(config);
  
-    # session.setTimeout(100)
+    if (sessionTimeoutSecs > 0) : session.setTimeout(sessionTimeoutSecs * 10)
+
+    print 'Logging into Remote SSH Shell key Auth...'    
  
     try:
-        session.connect()
+        if (sessionTimeoutSecs > 0) :
+            session.connect(sessionTimeoutSecs * 1000)
+        else:
+            session.connect()            
     except:
         return 'None'
  
     channel = session.openChannel("exec")
-    channel.setCommand(_command)
+    channel.setCommand('source ~/.bash_profile 2>/dev/null; ' + _command)
  
     outputBuffer = StringBuilder();
-    errorBuffer = StringBuilder();
- 
+
     stdin = channel.getInputStream();
     stdinExt = channel.getExtInputStream();
  
@@ -275,15 +279,85 @@ def execSshRemote(hostname, username, identityFileFullPath, identityPassword, co
         if n == -1:
             break
         if (chr(n) == '\n'):
-            errorBuffer.append('|')
+            outputBuffer.append('|')
         elif (chr(n) == '\r'):
-            errorBuffer.append('|')
+            outputBuffer.append('|')
         else :
-            errorBuffer.append(chr(n))
-  
-    print "Command: " + _command
+            outputBuffer.append(chr(n))
+                    
+    print "Command on: " + hostname + " : " + _command
     print "\toutput: " + outputBuffer.toString()
+    
+    channel.disconnect();
+    session.disconnect()    
+    
+    return outputBuffer.toString()
+
+# https://stackoverflow.com/questions/18835756/how-do-i-authenticate-programmatically-using-jsch
+def execSshRemoteUsrPwd(hostname, username, password, commandsSemiColonSeperated, sessionTimeoutSecs = 0):
+    _hostname = hostname
+    _username = username 
+    _password = password
+    _command = commandsSemiColonSeperated
+    
+    jsch = JSch()
+    
+    session = jsch.getSession(_username, _hostname, 22)
+    session.setPassword(_password);
+    config = Properties()
+    config.put("StrictHostKeyChecking", "no")
+    config.put("GSSAPIAuthentication", "no")
+    config.put("UnknownHostVerification", "no")
+    #config.put("PreferredAuthentications", "publickey");
+    session.setConfig(config);
+    
+    if (sessionTimeoutSecs > 0) : session.setTimeout(sessionTimeoutSecs * 10)
+
+    print 'Logging into Remote SSH Shell u/p Auth...'
+    
+    try:
+        if (sessionTimeoutSecs > 0) :
+            session.connect(sessionTimeoutSecs * 1000)
+        else:
+            session.connect()            
+    except:
+        return 'None'
+    
+    channel = session.openChannel("exec")
+    channel.setCommand('source ~/.bash_profile 2>/dev/null; ' + _command)
+    
+    outputBuffer = StringBuilder();
+    
+    stdin = channel.getInputStream();
+    stdinExt = channel.getExtInputStream();
+    
+    channel.connect(sessionTimeoutSecs * 1000);
+            
+    while (1) :
+        n = stdin.read()
+        if n == -1:
+            break
+        if (chr(n) == '\n'):
+            outputBuffer.append('|')
+        elif (chr(n) == '\r'):
+            outputBuffer.append('|')
+        else :
+            outputBuffer.append(chr(n))
+    
+    while (1) :
+        n = stdinExt.read()
+        if n == -1:
+            break
+        if (chr(n) == '\n'):
+            outputBuffer.append('|')
+        elif (chr(n) == '\r'):
+            outputBuffer.append('|')
+        else :
+            outputBuffer.append(chr(n))
  
+    print "Command on: " + hostname + " : " + _command
+    print "\toutput: " + outputBuffer.toString()
+
     channel.disconnect();
  
     return outputBuffer.toString()
