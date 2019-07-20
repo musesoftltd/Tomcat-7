@@ -3,6 +3,7 @@
 	<name>Tomcat-7</name>
 	<comment></comment>
 	<projects>
+		<project>Linux-RedHat-Bash</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
